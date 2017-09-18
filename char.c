@@ -4,13 +4,16 @@
 void Generatestring (int n, char* str);
 int main()
 {
+ // обычно отсутуп делают в 2 или 4 пробела ... 1 мало
  int i, p, k;
  char* s;
  scanf("%d", &p);
  k = (1 << p) - 1;
  s = (char*)malloc(sizeof(char)*k);
+ // пробелы вокруг *, + и т.п.
  Generatestring (p, s);
  printf ("%s", s);
+ // очистить память
 }
 void Generatestring (int n, char* str)
 {
