@@ -1,52 +1,65 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-void split (char*  ,char* );
-int main()
+char** split (char*, char*, int*);
+char* strscan ();
+int main ()
 {
-char* s,*tab;
-int i=0,j=0;
-s = (char*)malloc(sizeof(char));
-tab = (char*)malloc(sizeof(char));
-while ((s[i]=getchar())!='\n')
-{
-  // fixit: отступ = 2 или 4 пробела ... не 1
-  // fixit: пробелы вокруг бинарных операторов: (i + 1) * sizeof(char)
- 
-  // выделение памяти в куче - дорогая операция, если хотите именно в куче получить память, то можно было бы
-  // объем памяти увеличивать не на 1, в 2 раза при необходимости ... тогда число realloc'ов будет log2(n), а
-  // лишней памяти отъедите максимум в 2 раза больше чем нужно
- s = (char*) realloc(s, (i+1)*sizeof(char));
- i++;
-}
-s[i]='\0';
-while ((tab[j]=getchar())!='\n')
-{
- // fixit: у вас цикл while похож на предыдущий. копипаста быть не должно. вынесите в отдельную ф-ю.
- tab = (char*) realloc(tab, (j+1)*sizeof(char));
- j++;
-}
-tab[j]='\0';
-split( s, tab);
-return 0;
+  char *s, *tab;
+  char** head;
+  int i = 0, length;
+  s = strscan ();
+  tab = strscan ();
+  head = split ( s, tab, &length);
+  for (i = 0; i < length; i++)
+  printf ("%s\n", head[i]);  
+  free (s);
+  free (tab);
+  return 0;
 }
 
 
-
-void split (char* s ,char* tab)
+char** split (char* s ,char* tab, int* length)
 {
-char* point;
-  point = strtok(s, tab);
+  int counter = 1, i = 0;
+  char** head;
+  char* point;
+  head = (char**) malloc (sizeof(char*));
+  point = strtok (s, tab);
   while (point != NULL)
   {
-   // fix it: мы обговарива сигнатуру ф-и, вывод слов нужно вынести из ф-и
-    printf("%s\n", point);
+    if ((i + 1) == counter)
+    {
+      head = (char**) realloc (head, 2 * counter * sizeof(char*));
+      counter = 2 * counter;
+    }
+    head[i] = point;
+    i++;
+    counter = counter * 2;
     point = strtok (NULL, tab);
   }
+  *length = i;
+  return head;
 }
 
 
-            
+char* strscan ()
+{
+  int i = 0, counter = 1;
+  char *s;
+  s = (char*) malloc (sizeof(char));
+  while ((s[i] = getchar()) != '\n')
+  {          
+    if ((i + 1) == counter)
+    {
+      s = (char*) realloc (s, 2 * counter * sizeof(char));
+      counter = 2 * counter;
+    }
+    i++;
+  }
+  s[i] = '\0';
+  return s;
+}
 
  
 
