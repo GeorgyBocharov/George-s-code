@@ -14,17 +14,30 @@ int main(int argc, char *argv[])
 {
 	int height, i, father = 0;
 	FILE* text;
+	
+	/*
+	fixit: называйте переменные единообразно: вы везде в коде называете переменные со строчной буквы,
+	а здесь вдруг с заглавной PtrArr
+	*/
 	char** PtrArr;
 	pid_t pid = -1; 
 	text = fopen("text", "r");
 	PtrArr = readtxt(text);
 	fclose(text);
 	int amount = atoi(PtrArr[0]);
-	for (i = 1;i <= amount; i++)
+	for (i = 1; i <= amount; i++)
 	{
+		/*
+		height - немного неожиданное название переменной, обозначающей число найденных token'ов.
+		*/
 		char** string = split(PtrArr[i], &height);
 		int  time = atoi(string[height - 1]);
 		string[height - 1] = (char*) NULL;
+		
+		/*
+		fixit: придумайте более подходящее название переменных, т.к. из сравнения
+		"если отец меньше время" мало что понятно 
+		*/
 		if (father < time)
 			father = time;
 		pid = fork();
@@ -43,6 +56,9 @@ int main(int argc, char *argv[])
 		}
 		free(string);
 	}
+	/*
+	зачем этот sleep ?
+	*/
 	sleep(father + 1);
 	free(PtrArr);
 	return 0;
@@ -88,6 +104,10 @@ char** readtxt(FILE* text)
 	long int length;
 	size_t k;
 	char** PtrArr;	
+	
+	/*
+	fixit: единый стиль именования переменных -> fileString
+	*/
 	char* FileString;
 	errno = 0;
 	if (fseek(text, 0, SEEK_END) == -1)
