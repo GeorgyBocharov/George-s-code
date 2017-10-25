@@ -4,12 +4,35 @@
 #include <string.h>
 #include <time.h>
 
+/*
+fixit: прочитайте, пожалуйста, повнимательнее письмо c описанием упражнения
+https://groups.google.com/forum/#!topic/617group/obMvzSaXkX4
+
+у вас не хватает таблицы с ускорением + размер матрицы и число потоков нужно через аргументы 
+командной строки передавать
+*/
+
+/*
+в паре с перемножением матриц в качестве домашнего задания шло упражнение с
+fifo messenger'ом с использованием нитей, которое на семинаре не доделали.
+его также следует залить в репозиторий
+*/
+
 const int th_amount = 4;
 int height;
 int rest_height;
 
+/*
+Лучше придумать чуть более говорящее название для структуры.
+Может Task?
+У вас как бы каждая нить выполняет свою задачу.
+*/
 struct struct_t
 {
+	/*
+	можете комментарием пояснить, зачем вам нужно так много звездочек здесь?)
+	что пойдет не так, если по одной звездочке в каждой строке убрать?
+	*/
 	pthread_t** idptr;
 	double*** matrixptr_two;
 	double*** matrixptr_ex;
@@ -20,7 +43,17 @@ struct struct_t
 
 
 void* th_multiply (void* structure);
+
+/*
+обычно используют слово allocate, вместо give
+*/
 double** give_memory (int vert, int hor);
+
+/*
+fixit: чтобы увидеть ускорение от использования многопоточности, нужно брать 
+матрицы размером 10^3 * 10^3 и больше. руками вы не сможете ввести такую матрицу.
+нужно генерировать автоматически.
+*/
 void scan_matrix (double*** matrix, int vert, int hor);
 void print_matrix (double** matrix, int vert, int hor);
 void free_memory (double** matrix, int vert);
@@ -39,7 +72,7 @@ int main()
 	scanf ("%d%d", &vert_one, &hor_one);
 	printf("enter size of the second matrix (vert, then hor)\n");
 	scanf ("%d%d", &vert_two, &hor_two);
-	if ((vert_one <= 0) || (vert_two <= 0) || (hor_one <= 0) || (hor_two <= 0))
+	if (vert_one <= 0 || vert_two <= 0 || hor_one <= 0 || hor_two <= 0)
 	{
 		printf("wrong value of some size\n");
 		exit(EXIT_FAILURE);
