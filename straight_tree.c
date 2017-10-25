@@ -9,6 +9,9 @@ int main()
 	int  i = 0, n, *id;
 	pid_t father, pid;
 	id = (int*) calloc (n, sizeof (int));
+	/*
+	fixit: не кажется странным, что вы выделили память до того, как узнали количество процессов?
+	*/
 	printf ("enter amount of processes  ");
 	scanf ("%d", &n);
 	father = getpid();
@@ -33,6 +36,10 @@ int main()
 			waitpid (pid, &i, 0);
 			printf ("I am %d,  my child %d died\n", getpid (),  pid);
 			break;
+			/*
+			если я правильно понял, то здесь вместо break вы как раз можете написать exit.
+			и тогда цикл ниже можно будет удалить
+			*/
 		}
 	}
 	for (i = 0;i < n; i++)
