@@ -12,34 +12,21 @@ char**	split(char*, int*);
 
 int main(int argc, char *argv[])
 {
-	int height, i, father = 0;
+	int words = 0, i = 0, maxtime = 0;
 	FILE* text;
-	
-	/*
-	fixit: называйте переменные единообразно: вы везде в коде называете переменные со строчной буквы,
-	а здесь вдруг с заглавной PtrArr
-	*/
-	char** PtrArr;
+	char** ptrarr;
 	pid_t pid = -1; 
 	text = fopen("text", "r");
-	PtrArr = readtxt(text);
+	ptrarr = readtxt(text);
 	fclose(text);
-	int amount = atoi(PtrArr[0]);
-	for (i = 1; i <= amount; i++)
+	int amount = atoi(ptrarr[0]);
+	for (i = 1;i <= amount; i++)
 	{
-		/*
-		height - немного неожиданное название переменной, обозначающей число найденных token'ов.
-		*/
-		char** string = split(PtrArr[i], &height);
-		int  time = atoi(string[height - 1]);
-		string[height - 1] = (char*) NULL;
-		
-		/*
-		fixit: придумайте более подходящее название переменных, т.к. из сравнения
-		"если отец меньше время" мало что понятно 
-		*/
-		if (father < time)
-			father = time;
+		char** string = split(ptrarr[i], &words);
+		int  time = atoi(string[words - 1]);
+		string[words - 1] = (char*) NULL;
+		if (maxtime < time)
+			maxtime = time;
 		pid = fork();
 		if (pid == 0)
 		{
@@ -56,11 +43,8 @@ int main(int argc, char *argv[])
 		}
 		free(string);
 	}
-	/*
-	зачем этот sleep ?
-	*/
-	sleep(father + 1);
-	free(PtrArr);
+	sleep(maxtime + 1); //этот sleep нужен, чтобы строка vim - а не прерывала вывод команд в терминале
+	free(ptrarr);
 	return 0;
 }
 
@@ -100,15 +84,11 @@ char** split (char* s, int* length)
 
 char** readtxt(FILE* text)
 {
-	int i, j = 1, count = 0;
-	long int length;
+	int i = 0, j = 1, count = 0;
+	long int length = 0;
 	size_t k;
-	char** PtrArr;	
-	
-	/*
-	fixit: единый стиль именования переменных -> fileString
-	*/
-	char* FileString;
+	char** ptrarr;	
+	char* filestring;
 	errno = 0;
 	if (fseek(text, 0, SEEK_END) == -1)
 	{
@@ -117,39 +97,39 @@ char** readtxt(FILE* text)
 	}
 	length = ftell(text);
 	rewind(text);
-	if (!(FileString = (char*) calloc (length + 1, sizeof(char))))
+	if (!(filestring = (char*) calloc (length + 1, sizeof(char))))
 	{
 		printf("calloc: error: %s\n", strerror(errno));
 		exit(-1);
 	}
-	if ((k = fread(FileString, sizeof(char), length,text)) != length)
+	if ((k = fread(filestring, sizeof(char), length,text)) != length)
 	{
 		printf("read wrong");
 		exit(-1);
 	}
-	FileString[length] = '\n';
+	filestring[length] = '\n';
 	for (i = 0;i < length + 1; i++)
 	{
-		if (FileString[i] == '\n')
+		if (filestring[i] == '\n')
 		{
 			count++;
 		}
 	}
-	FileString[length] = '\0';
-	if (!(PtrArr = (char**) calloc(count, sizeof(char*))))
+	filestring[length] = '\0';
+	if (!(ptrarr = (char**) calloc(count, sizeof(char*))))
 	{
 		printf("calloc: error: %s\n", strerror(errno));
 		exit(-1);
 	}
-	PtrArr[0] = &(FileString[0]);
+	ptrarr[0] = &(filestring[0]);
 	for (i = 0; i < length; i++)
 	{
-		if (FileString[i] == '\n')
+		if (filestring[i] == '\n')
 		{
-			FileString[i] = '\0';
-			PtrArr[j] = &(FileString[i + 1]);
+			filestring[i] = '\0';
+			ptrarr[j] = &(filestring[i + 1]);
 			j++;
 		}
 	}
-	return PtrArr;
+	return ptrarr;
 }
