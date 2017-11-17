@@ -4,34 +4,19 @@
 #include <string.h>
 #include <time.h>
 
-/*
-fixit: прочитайте, пожалуйста, повнимательнее письмо c описанием упражнения
-https://groups.google.com/forum/#!topic/617group/obMvzSaXkX4
-
-у вас не хватает таблицы с ускорением + размер матрицы и число потоков нужно через аргументы 
-командной строки передавать
-*/
-
-/*
-в паре с перемножением матриц в качестве домашнего задания шло упражнение с
-fifo messenger'ом с использованием нитей, которое на семинаре не доделали.
-его также следует залить в репозиторий
-*/
-
-const int th_amount = 4;
+#define ARG 5
+#define MAX_THREADS 20
+int th_amount;
 int height;
 int rest_height;
 
-/*
-Лучше придумать чуть более говорящее название для структуры.
-Может Task?
-У вас как бы каждая нить выполняет свою задачу.
-*/
-struct struct_t
+struct _struct_t
 {
 	/*
 	можете комментарием пояснить, зачем вам нужно так много звездочек здесь?)
-	что пойдет не так, если по одной звездочке в каждой строке убрать?
+	что пойдет не так, если по одной звездочке в каждой строке убрать?*/
+	/*
+	-Звёздочки нужны, чтобы выделять память только на саму структуру, а не на каждый её элемент
 	*/
 	pthread_t** idptr;
 	double*** matrixptr_two;
@@ -41,37 +26,49 @@ struct struct_t
 	int* horptr_one;
 };
 
+typedef struct _struct_t struct_t;
 
 void* th_multiply (void* structure);
-
-/*
-обычно используют слово allocate, вместо give
-*/
-double** give_memory (int vert, int hor);
-
-/*
-fixit: чтобы увидеть ускорение от использования многопоточности, нужно брать 
-матрицы размером 10^3 * 10^3 и больше. руками вы не сможете ввести такую матрицу.
-нужно генерировать автоматически.
-*/
-void scan_matrix (double*** matrix, int vert, int hor);
+double** allocate_memory (int vert, int hor);
+void create_matrix (double*** matrix, int vert, int hor);
 void print_matrix (double** matrix, int vert, int hor);
 void free_memory (double** matrix, int vert);
 void multiply (double*** matrixptr_one, int vert_one, int hor_one, 
 			   double*** matrixptr_two, int hor_two,  double*** matrixptr_ex);
 
-int main()
+int main(int argc, char* argv[])
 {
-	int count, i = 0;
+	
+	int count = 0, i = 0;
 	double **matrix_one, **matrix_two, **matrix_ex;
 	int vert_one = -1, hor_one = -1, vert_two = -1, hor_two = -1;
-	int vert_ex, hor_ex;
-	struct_t* my_struct;
+	int vert_ex, hor_ex, amount, reply = 0;
+	double result;
+	struct_t* Info;
 	pthread_t* id;
-	printf ("enter size of the first matrix (vert, then hor)\n");
-	scanf ("%d%d", &vert_one, &hor_one);
-	printf("enter size of the second matrix (vert, then hor)\n");
-	scanf ("%d%d", &vert_two, &hor_two);
+	
+	printf("max amount of threads is %d\n", MAX_THREADS);
+	printf("enter amount of processes\n(it should be less than amount of threads)\n");
+	scanf("%d", &amount);
+	clock_t time[amount], simple_time;
+
+	if (argc != ARG)
+	{
+		printf("you entered too few arguments\n");
+		exit(EXIT_FAILURE);
+	}
+	vert_one = atoi(argv[1]);
+	hor_one = atoi(argv[2]);
+	vert_two = atoi(argv[3]);
+	hor_two = atoi(argv[4]);
+	if (amount > MAX_THREADS)
+	{
+		printf("ERROR:\namount of processes is greater than amount of threads\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	th_amount = 2;
+
 	if (vert_one <= 0 || vert_two <= 0 || hor_one <= 0 || hor_two <= 0)
 	{
 		printf("wrong value of some size\n");
@@ -82,69 +79,89 @@ int main()
 		printf("wrong sizes of matrix, multiply isn't available\n");
 		exit(EXIT_FAILURE);
 	}
-	if ((id = (pthread_t*) calloc (((size_t) th_amount), sizeof(pthread_t))) == NULL)
-		{
-			perror("<<number>> string of matrix: error in calloc");
-			printf("\nnumber is:%d\n", count);
-			exit(EXIT_FAILURE);
-		}
+	if ((Info = (struct_t*) calloc (1, sizeof(struct_t))) == NULL)
+	{
+		perror("error of struct Info calloc");
+		exit(EXIT_FAILURE);
+	}
+	if ((id = (pthread_t*) calloc (MAX_THREADS, sizeof(pthread_t))) == NULL)
+	{
+		perror("error in calloc of id array");
+		exit(EXIT_FAILURE);
+	}
 	vert_ex = vert_one;
 	hor_ex = hor_two;
-	matrix_one = give_memory(vert_one, hor_one);
-	matrix_two = give_memory(vert_two, hor_two);
-	matrix_ex  = give_memory(vert_ex, hor_ex);
+	matrix_one = allocate_memory(vert_one, hor_one);
+	matrix_two = allocate_memory(vert_two, hor_two);
+	matrix_ex  = allocate_memory(vert_ex, hor_ex);
 
-	printf("get ready to enter first matrix\n");
-	scan_matrix(&matrix_one, vert_one, hor_one);
+	create_matrix(&matrix_one, vert_one, hor_one);
+	create_matrix(&matrix_two, vert_two, hor_two);
 
-	printf("get ready to enter second matrix\n");
-	scan_matrix(&matrix_two, vert_two, hor_two);
-
-
-	my_struct->idptr			= &id;
-	my_struct->horptr_two		= &hor_two;
-	my_struct->matrixptr_two	= &matrix_two;
-	my_struct->matrixptr_ex		= &matrix_ex;
-	my_struct->horptr_one		= &hor_one;
-	my_struct->matrixptr_one	= &matrix_one;
-
-	long int start_time = clock();
-	if ((vert_one / th_amount) >= 1)
+	Info->idptr	     		= &id;
+	Info->horptr_two		= &hor_two;
+	Info->matrixptr_two  	= &matrix_two;
+	Info->matrixptr_ex		= &matrix_ex;
+	Info->horptr_one		= &hor_one;
+	Info->matrixptr_one	    = &matrix_one;
+	
+	
+	for (i = 0; i < amount; i++)
 	{
-		height = vert_one / th_amount;
-		rest_height = vert_one -  (th_amount - 1) * height ;
-		printf("height = %d\n", height);
-		printf("rest = %d\n", rest_height);
-		for (count = 0; count < th_amount; count++)
+		time[i] = clock();
+		if ((vert_one / th_amount) >= 1)
 		{
-			if (pthread_create(&id[count], NULL, th_multiply, ((void*) my_struct)) != 0)
+			height = vert_one / th_amount;
+			rest_height = vert_one -  (th_amount - 1) * height ;
+			for (count = 0; count < th_amount; count++)
 			{
-				perror("thread <<number>>: error of thread creating");
-				printf("number is:%d\n", count);
-				exit(EXIT_FAILURE);
+				if (pthread_create(&id[count], NULL, th_multiply, ((void*) Info)) != 0)
+				{
+					perror("thread <<number>>: error of thread creating");
+					printf("number is:%d\n", count);
+					exit(EXIT_FAILURE);
+				}
 			}
-			
+			for (count = 0; count < th_amount; count++)
+				pthread_join(id[count],	NULL);
+			time[i] = clock() - time[i];
+			printf("time[%d] is %ld\n", i, time[i]);
+			th_amount ++;
 		}
+		else
+			break;
 	}
-	else
-	{
-		multiply(&matrix_one, vert_one, hor_one,
+	th_amount--;
+	simple_time = clock();
+	
+	multiply(&matrix_one, vert_one, hor_one,
 				 &matrix_two, vert_two, &matrix_ex);
+	
+	simple_time = clock() - simple_time;
+	printf("simple_time is %ld\n", simple_time);
+	printf("enter 1 to print the result of multiply\n");
+	scanf("%d", &reply);
+	if (reply == 1)
+		print_matrix (matrix_ex, vert_ex, hor_ex);
+	printf(" ______________\n");
+	printf("|N ||| boost   |\n");
+	for (i = amount - 1; i >= 0; i--)
+	{
+		result = (double) (simple_time) / (time[i]);
+		printf("|__|||_________|\n");
+		printf("|%d ||| %lg|\n", th_amount, result);
+		th_amount--;
 	}
-	for (i = 0; i < th_amount; i++)
-		pthread_join(id[i],	NULL);
-	printf("multiplied matrix is:\n");
-	print_matrix (matrix_ex, vert_ex, hor_ex);
+	printf("|__|||_________|\n");
 	free_memory(matrix_one, vert_one);
 	free_memory(matrix_two, vert_two);
 	free_memory(matrix_ex, vert_ex);
-	long int end_time = clock();
-	printf("time of multiply is %li\n", (end_time - start_time));
+	free(Info);
 	return 0;
 }
 
 
-double** give_memory (int vert, int hor)
+double** allocate_memory (int vert, int hor)
 {
 	int count;
 	double** matrix;
@@ -165,7 +182,7 @@ double** give_memory (int vert, int hor)
 	return matrix;
 }
 
-void scan_matrix (double*** matr, int vert, int hor)
+void create_matrix (double*** matr, int vert, int hor)
 {
 	int i, j;
 	double **matrix = *matr;
@@ -173,7 +190,7 @@ void scan_matrix (double*** matr, int vert, int hor)
 	{
 		for (j = 0; j < hor; j++)
 		{
-			scanf("%lg", &matrix[i][j]);
+			matrix[i][j] = (double) (random() % 4);
 		}
 	}
 	matr = &matrix;
@@ -228,15 +245,15 @@ void free_memory (double** matrix, int vert)
 
 void* th_multiply (void* structure)
 {
-	struct_t* my_struct = ((struct_t*) structure);
+	struct_t* Info = ((struct_t*) structure);
 	int i, j, k, need = 0, tall;
-	int hor_two = *(my_struct->horptr_two);
-	int hor_one = *(my_struct->horptr_one);
-	double** matrix_two = *(my_struct->matrixptr_two);
-	pthread_t* id = *(my_struct->idptr);
-	double** matrix_one = *(my_struct->matrixptr_one);
+	int hor_two = *(Info->horptr_two);
+	int hor_one = *(Info->horptr_one);
+	double** matrix_two = *(Info->matrixptr_two);
+	pthread_t* id = *(Info->idptr);
+	double** matrix_one = *(Info->matrixptr_one);
 	double sum = 0;
-	double** matrix_ex = *(my_struct->matrixptr_ex);
+	double** matrix_ex = *(Info->matrixptr_ex);
 	for (i = 0; i < th_amount; i++)
 	{
 		if (pthread_self() == id[i])
