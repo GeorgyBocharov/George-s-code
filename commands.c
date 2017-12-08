@@ -17,18 +17,18 @@ int main(int argc, char *argv[])
 	int words = 0, i = 0, maxtime = 0;
 	FILE* text;
 	char** ptrarr;
+	int number;
 	pid_t pid = -1; 
 	text = fopen("text", "r");
 	ptrarr = readtxt(text);
 	fclose(text);
 	int amount = atoi(ptrarr[0]);
+	printf("amount is %d\n", amount);
 	for (i = 1;i <= amount; i++)
 	{
 		char** string = split(ptrarr[i], &words);
 		int  time = atoi(string[words - 1]);
 		string[words - 1] = (char*) NULL;
-		if (maxtime < time)
-			maxtime = time;
 		pid = fork();
 		if (pid == 0)
 		{
@@ -38,15 +38,18 @@ int main(int argc, char *argv[])
 			perror("exec failed");
 			exit(-1);
 		}
-		if (pid == -1)
+		else if (pid == -1)
 		{
 			perror("fork failed");
 			exit(-1);
 		}
+		else 
+		{
+			number = i - 1;
+			waitpid (pid, &number, 0);
+		}
 		free(string);
 	}
-	if (maxtime < CRITICAL_TIME)
-		sleep(maxtime + 1); //этот sleep нужен, чтобы строка vim - а не прерывала вывод команд в терминале
 	free(ptrarr);
 	return 0;
 }
