@@ -20,13 +20,14 @@ int main(int argc, char *argv[])
 	ptrarr = readtxt(text);
 	fclose(text);
 	int amount = atoi(ptrarr[0]);
+	pid_t id[amount];
 	for (i = 1;i <= amount; i++)
 	{
 		char** string = split(ptrarr[i], &words);
 		int  time = atoi(string[words - 1]);
 		string[words - 1] = (char*) NULL;
-		pid = fork();
-		if (pid == 0)
+		id[i - 1] = fork();
+		if (id[i - 1] == 0)
 		{
 			sleep(time);
 			printf("process %d, running new programm\n", i);
@@ -34,15 +35,15 @@ int main(int argc, char *argv[])
 			perror("exec failed");
 			exit(-1);
 		}
-		else if (pid == -1)
+		else if (id[i - 1] == -1)
 		{
 			perror("fork failed");
 			exit(-1);
 		}
-		else 
-			waitpid (pid, 0, 0);
 		free(string);
 	}
+	for (i = 0; i < amount; i++)
+		waitpid(id[i], 0 , 0);
 	free(ptrarr);
 	return 0;
 }
