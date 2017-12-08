@@ -12,7 +12,7 @@ char**	split(char*, int*);
 
 int main(int argc, char *argv[])
 {
-	int words = 0, i = 0, maxtime = 0;
+	int words = 0, i = 0;
 	FILE* text;
 	char** ptrarr;
 	pid_t pid = -1; 
@@ -21,21 +21,21 @@ int main(int argc, char *argv[])
 	fclose(text);
 	int amount = atoi(ptrarr[0]);
 	pid_t id[amount];
-	for (i = 1;i <= amount; i++)
+	for (i = 0; i < amount; i++)
 	{
-		char** string = split(ptrarr[i], &words);
+		char** string = split(ptrarr[i + 1], &words);
 		int  time = atoi(string[words - 1]);
 		string[words - 1] = (char*) NULL;
-		id[i - 1] = fork();
-		if (id[i - 1] == 0)
+		id[i] = fork();
+		if (id[i] == 0)
 		{
 			sleep(time);
-			printf("process %d, running new programm\n", i);
+			printf("process %d, running new programm\n", i + 1);
 			execvp(string[0], string);
 			perror("exec failed");
 			exit(-1);
 		}
-		else if (id[i - 1] == -1)
+		else if (id[i] == -1)
 		{
 			perror("fork failed");
 			exit(-1);
