@@ -10,9 +10,11 @@
 #include <pthread.h>
 #include <math.h>
 
+#define MAX_LENGTH 50
+
 char* strscan ();
-void func_one (char* fifo_name);
-void func_two (char* fifo_name);
+void reader (char* fifo_name);
+void writer (char* fifo_name);
 
 
 int main(int argc, char* argv[])
@@ -24,20 +26,20 @@ int main(int argc, char* argv[])
 	mknod (fifo_name2, S_IFIFO | 0666, 0);
 	pid_t result = fork();
 	if (result == 0)
-		func_one(fifo_name1);
+		reader(fifo_name1);
 	else
-		func_two(fifo_name2);
+		writer(fifo_name2);
 	return 0;
 }
 
-void func_one (char* fifo_name)
+void reader (char* fifo_name)
 {
 	long int size, bytesread;
 	int fd = open(fifo_name, O_RDONLY);
+	char* readstring = (char*) calloc (MAX_LENGTH, sizeof(char));
 	while (1)
 	{
-		char* readstring = (char*) calloc (50, sizeof(char));
-		if ((bytesread = read(fd, readstring, 50 * sizeof(char))) == -1)
+		if ((bytesread = read(fd, readstring, MAX_LENGTH * sizeof(char))) == -1)
 		{
 			perror("error of reading");
 			exit(EXIT_FAILURE);
@@ -47,13 +49,12 @@ void func_one (char* fifo_name)
 			printf("The second file exited");
 			exit(EXIT_FAILURE);
 		}
-
 		printf("-  %s\n", readstring);
-		free(readstring);
 	}
+	free(readstring);
 }
 	
-void func_two (char* fifo_name)
+void writer (char* fifo_name)
 {
 	long int size, bytesread;
 	int fd = open(fifo_name, O_WRONLY);
