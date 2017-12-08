@@ -7,8 +7,6 @@
 #include <wait.h>
 #include <errno.h>
 
-#define CRITICAL_TIME 40
-
 char**	readtxt(FILE*);
 char**	split(char*, int*);
 
