@@ -7,6 +7,8 @@
 #include <wait.h>
 #include <errno.h>
 
+#define CRITICAL_TIME 40
+
 char**	readtxt(FILE*);
 char**	split(char*, int*);
 
@@ -43,7 +45,8 @@ int main(int argc, char *argv[])
 		}
 		free(string);
 	}
-	sleep(maxtime + 1); //этот sleep нужен, чтобы строка vim - а не прерывала вывод команд в терминале
+	if (maxtime < CRITICAL_TIME)
+		sleep(maxtime + 1); //этот sleep нужен, чтобы строка vim - а не прерывала вывод команд в терминале
 	free(ptrarr);
 	return 0;
 }
