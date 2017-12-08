@@ -13,8 +13,8 @@
 #define MAX_LENGTH 50
 
 char* strscan ();
-void reader (char* fifo_name);
-void writer (char* fifo_name);
+void Read (char* fifo_name);
+void Write (char* fifo_name);
 
 
 int main(int argc, char* argv[])
@@ -26,13 +26,13 @@ int main(int argc, char* argv[])
 	mknod (fifo_name2, S_IFIFO | 0666, 0);
 	pid_t result = fork();
 	if (result == 0)
-		reader(fifo_name1);
+		Read(fifo_name1);
 	else
-		writer(fifo_name2);
+		Write(fifo_name2);
 	return 0;
 }
 
-void reader (char* fifo_name)
+void Read (char* fifo_name)
 {
 	long int size, bytesread;
 	int fd = open(fifo_name, O_RDONLY);
@@ -54,7 +54,7 @@ void reader (char* fifo_name)
 	free(readstring);
 }
 	
-void writer (char* fifo_name)
+void Write (char* fifo_name)
 {
 	long int size, bytesread;
 	int fd = open(fifo_name, O_WRONLY);
