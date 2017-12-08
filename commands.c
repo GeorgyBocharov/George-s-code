@@ -15,13 +15,12 @@ int main(int argc, char *argv[])
 	int words = 0, i = 0, maxtime = 0;
 	FILE* text;
 	char** ptrarr;
-	int number;
+	int status = 0;
 	pid_t pid = -1; 
 	text = fopen("text", "r");
 	ptrarr = readtxt(text);
 	fclose(text);
 	int amount = atoi(ptrarr[0]);
-	printf("amount is %d\n", amount);
 	for (i = 1;i <= amount; i++)
 	{
 		char** string = split(ptrarr[i], &words);
@@ -42,10 +41,7 @@ int main(int argc, char *argv[])
 			exit(-1);
 		}
 		else 
-		{
-			number = i - 1;
-			waitpid (pid, &number, 0);
-		}
+			waitpid (pid, &status, 0);
 		free(string);
 	}
 	free(ptrarr);
