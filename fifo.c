@@ -21,7 +21,6 @@ int main(int argc, char* argv[])
 {
 	char* fifo_name1 = argv[1];
 	char* fifo_name2 = argv[2];
-	long int size, bytesread;
 	mknod (fifo_name1, S_IFIFO | 0666, 0);
 	mknod (fifo_name2, S_IFIFO | 0666, 0);
 	pid_t result = fork();
