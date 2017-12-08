@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
 	int words = 0, i = 0, maxtime = 0;
 	FILE* text;
 	char** ptrarr;
-	int status = 0;
 	pid_t pid = -1; 
 	text = fopen("text", "r");
 	ptrarr = readtxt(text);
@@ -41,7 +40,7 @@ int main(int argc, char *argv[])
 			exit(-1);
 		}
 		else 
-			waitpid (pid, &status, 0);
+			waitpid (pid, 0, 0);
 		free(string);
 	}
 	free(ptrarr);
