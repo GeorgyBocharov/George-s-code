@@ -32,7 +32,7 @@ enum FeedBack search(char *path, int deep, const char *file, char* answer)
 	{
 		perror("Can't open directory");
 		exit(1);
-    	}
+    }
 	while((active = readdir(dir)) != NULL) 
 	{
 		if(!strcmp(active->d_name, file))
@@ -95,9 +95,9 @@ void RaseDir(char* path)
 	len = strlen(path);
 	do 
    	{
-        	path [len] = '\0';
+        path [len] = '\0';
 		len--;
-    	}
+    }
 	while (len != 0 && path [len] != '/');
 		return;
 }
