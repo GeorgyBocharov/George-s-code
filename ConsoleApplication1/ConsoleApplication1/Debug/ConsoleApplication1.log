@@ -1,0 +1,12 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (ConsoleApplication1.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Source.cpp
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\functions.h(14): warning C4305: инициализация: усечение из "double" к "float"
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\functions.h(53): warning C4244: аргумент: преобразование "unsigned int" в "float", возможна потеря данных
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\functions.h(56): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\functions.h(76): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\functions.h(84): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\source.cpp(45): warning C4244: аргумент: преобразование "const int" в "float", возможна потеря данных
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\source.cpp(47): warning C4244: аргумент: преобразование "const int" в "float", возможна потеря данных
+c:\users\george\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\source.cpp(109): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+  ConsoleApplication1.vcxproj -> C:\Users\George\Documents\Visual Studio 2015\Projects\ConsoleApplication1\Debug\Falcon.exe
+  ConsoleApplication1.vcxproj -> C:\Users\George\Documents\Visual Studio 2015\Projects\ConsoleApplication1\Debug\Falcon.pdb (Full PDB)
