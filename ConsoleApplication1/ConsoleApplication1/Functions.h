@@ -16,6 +16,10 @@ const float Pi = 3.14159f;
 
 struct Shots
 {
+	/*
+	Неясно из названия, что значит k.
+	Точно ли необходимо хранить именно объект таймер для каждого выстрела?
+	*/
 	double k;
 	sf::Vector2f start;
 	sf::Vector2f dest;
@@ -23,6 +27,8 @@ struct Shots
 };
 
 sf::Vector2f LaserDirection(sf::Vector2f, sf::Vector2f);
+
+// fixit: названия ф-й и методов классов - глаголы
 void Motion(sf::Sprite&);
 std::pair <sf::Vector2f, sf::Vector2f> MouseOrientation(sf::Sprite&, sf::RenderWindow&, double&);
 int norm(float);
@@ -33,6 +39,11 @@ void Music (sf::Music& background);
 
 void Motion(sf::Sprite &figure)
 {
+	// У вас движение персонажа зависит от fps в игре ... т.к. при нажатой клавише движения каждый кадр сдвигаетесь на 1 пиксель.
+	// И чем больше fps, тем быстрее персонаж перемещается. Так быть не должно.
+	// В упражнении пойдет, но в проекте надо исправить эту проблему.
+	// Нужно задать максимальную скорость движения - константу ... и на каждом кадре вычислять dt между кадрами
+	
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W)) && (figure.getPosition().y > HALF_SIZE))
 		figure.move(0, -1);
 
@@ -64,6 +75,7 @@ sf::Vector2f LaserDirection(sf::Vector2f ship, sf::Vector2f mouse)
 {
 	double  b, k;
 	sf::Vector2f point;
+	// а что с вертикальной прямой делать ?) обычно уравнение прямой в виде ax + by + c = 0 записывают, что такой проблемы не было
 	k = (ship.y - mouse.y) / (ship.x - mouse.x);
 	b = ship.y - k * ship.x;
 
@@ -86,6 +98,8 @@ sf::Vector2f LaserDirection(sf::Vector2f ship, sf::Vector2f mouse)
 	return point;
 }
 
+// это называется sign , а не norm ...
+// return coord > 0 ? 1 : -1;
 int norm(float coord)
 {
 	if (coord > 0)
