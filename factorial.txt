@@ -1,0 +1,34 @@
+in
+pop_reg ax
+push 1 ax
+pop_reg bx
+push 1 bx
+pop_reg cx
+push 0 1
+pop_reg dx
+push 0 2
+push 0 2
+.label
+pop
+pop
+call func
+push 0 1
+push 1 cx
+ja label
+push 1 bx
+out
+end
+func:
+push 1 ax
+push 1 dx
+sub
+pop_reg cx
+push 1 cx
+push 1 bx
+mul
+pop_reg bx
+push 1 dx
+push 0 1
+add
+pop_reg dx
+ret
