@@ -1,0 +1,5 @@
+/home/george/Documents/clion-2018.1.1/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/usr/bin/make -DCMAKE_C_COMPILER=/usr/bin/cc -DCMAKE_CXX_COMPILER=/usr/bin/c++ -G "CodeBlocks - Unix Makefiles" /home/george/CLionProjects/Game
+-- Found SFML .. in /usr/include
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/george/CLionProjects/Game/cmake-build-debug
